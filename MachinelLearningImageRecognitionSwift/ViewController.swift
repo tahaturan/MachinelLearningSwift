@@ -68,9 +68,9 @@ extension ViewController{
         // 1-) request olusturmak
         // 2-) request in handler edilmesi
         
-        
+        //Request Olsuturma
         if let model = try? VNCoreMLModel(for: MobileNetV2().model){
-            //Request Olsuturma
+            
             let request = VNCoreMLRequest(model: model) { vnrequest , error in
                 
                 if let results = vnrequest.results as? [VNClassificationObservation]{
@@ -80,7 +80,8 @@ extension ViewController{
                         
                         DispatchQueue.main.async {
                             let confidenceLevel = (topResult?.confidence ?? 0) * 100 // yuzde kac ihtimalle
-                            self.resultLabel.text = "\(confidenceLevel)% it's \(topResult!.identifier)" // sonucunda ne cikti
+                            let rounded = Int(confidenceLevel * 100) / 100
+                            self.resultLabel.text = "\(rounded)% it's \(topResult!.identifier)" // sonucunda ne cikti
                         }
                         
                     }
@@ -88,10 +89,19 @@ extension ViewController{
                 }
                 
             }
+            //Handler Olsuturma
             
+            let handler = VNImageRequestHandler(ciImage: image)
+            
+            DispatchQueue.global(qos: .userInteractive).async {
+                
+                do{
+                    try handler.perform([request])
+                }catch{
+                    print(error)
+                }
+              
+            }
         }
-        
-        
-        
     }
 }
