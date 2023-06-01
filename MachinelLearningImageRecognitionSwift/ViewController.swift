@@ -64,5 +64,34 @@ extension ViewController{
     //MARK: ne oldugunu anlamak icin
     func recognizeImage(image: CIImage)  {
         
+        //resimleri tanimak icin adimlarimiz
+        // 1-) request olusturmak
+        // 2-) request in handler edilmesi
+        
+        
+        if let model = try? VNCoreMLModel(for: MobileNetV2().model){
+            //Request Olsuturma
+            let request = VNCoreMLRequest(model: model) { vnrequest , error in
+                
+                if let results = vnrequest.results as? [VNClassificationObservation]{
+                    
+                    if results.count > 0 {
+                        let topResult = results.first
+                        
+                        DispatchQueue.main.async {
+                            let confidenceLevel = (topResult?.confidence ?? 0) * 100 // yuzde kac ihtimalle
+                            self.resultLabel.text = "\(confidenceLevel)% it's \(topResult!.identifier)" // sonucunda ne cikti
+                        }
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        
+        
     }
 }
